@@ -20,9 +20,9 @@ class SessionsController < ApplicationController
 
   private
 
-   def _log_in(user)
+  def _log_in(user)
     log_in user
     params[:session][:remember_me] == '1' ? remember(user) : forget(user)
     redirect_to user
-   end
+  end
 end
