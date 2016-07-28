@@ -30,5 +30,27 @@ class UsersSignupTest < ActionDispatch::IntegrationTest
         password_confirmation: 'password'
       }
     end
+    assert_equal 1, ActionMailer::Base.deliveries.size
+    user = assigns(:user)
+    assert_not user.activated?
+
+    # try login while not activated
+    log_in_as(user)
+    assert_not logged_in?
+
+    # try activate with wrong token
+    get edit_account_activation_path('invalid token')
+    assert_not logged_in?
+
+    # try activate with wrong email
+    get edit_account_activation_path(user.activation_token, email: 'wrong')
+    assert_not logged_in?
+
+    # try activate with correct token and email
+    get edit_account_activation_path(user.activation_token, email: user.email)
+    assert user.reload.activated?
+    follow_redirect!
+    assert_template 'users/show'
+    assert logged_in?
   end
 end
