@@ -1,3 +1,4 @@
+# migration to add reset digest to user
 class AddResetToUsers < ActiveRecord::Migration
   def change
     add_column :users, :reset_digest, :string
