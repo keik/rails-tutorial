@@ -1,3 +1,4 @@
+# controller for sessions
 class SessionsController < ApplicationController
   def new
   end
@@ -5,9 +6,13 @@ class SessionsController < ApplicationController
   def create
     user = User.find_by(email: params[:session][:email].downcase)
     if user && user.authenticate(params[:session][:password])
-      log_in user
-      remember user
-      redirect_to user
+      if user.activated?
+        _log_in_and_redirect user
+      else
+        message = 'Account not activated. Check your email for the activation link'
+        flash[:warning] = message
+        redirect_to root_url
+      end
     else
       flash.now[:danger] = 'Invalid email/password combination'
       render 'new'
@@ -15,6 +20,15 @@ class SessionsController < ApplicationController
   end
 
   def destroy
+    log_out if logged_in?
+    redirect_to root_path
   end
 
+  private
+
+  def _log_in_and_redirect(user)
+    log_in user
+    params[:session][:remember_me] == '1' ? remember(user) : forget(user)
+    redirect_back_or user
+  end
 end

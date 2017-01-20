@@ -1,0 +1,9 @@
+AllCops:
+  Exclude:
+    - 'bin/*'
+    - 'config/environments/*'
+    - 'config/initializers/*'
+    - 'db/schema.rb'
+    - 'db/seeds.rb'
+Metrics/LineLength:
+  Max: 100
